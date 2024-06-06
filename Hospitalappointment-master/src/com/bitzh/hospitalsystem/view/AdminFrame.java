@@ -46,7 +46,7 @@ public class AdminFrame extends JFrame {
             StringBuilder info = new StringBuilder();
             for (User user : users) {
                 info.append("ID: ").append(user.getId())
-                        .append(", 姓名: ").append(user.getUsername()) // 修改这一行
+                        .append(", 姓名: ").append(user.getUsername())
                         .append("\n");
             }
             JOptionPane.showMessageDialog(this, info.toString(), "用户信息", JOptionPane.INFORMATION_MESSAGE);
@@ -60,8 +60,16 @@ public class AdminFrame extends JFrame {
                     String newName = JOptionPane.showInputDialog(this, "输入新用户姓名:");
                     String newPassword = JOptionPane.showInputDialog(this, "输入新用户密码:");
                     if (newName != null && newPassword != null) {
-                        userDao.addUser(newName, newPassword);
-                        JOptionPane.showMessageDialog(this, "用户添加成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        try {
+                            if (userDao.usernameExists(newName)) {
+                                JOptionPane.showMessageDialog(this, "用户名已存在，请选择其他用户名", "错误", JOptionPane.ERROR_MESSAGE);
+                            } else {
+                                userDao.addUser(newName, newPassword);
+                                JOptionPane.showMessageDialog(this, "用户添加成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                        } catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(this, "操作失败，请重试", "错误", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                     break;
                 case 1:
@@ -69,15 +77,23 @@ public class AdminFrame extends JFrame {
                     String updatedName = JOptionPane.showInputDialog(this, "输入新姓名:");
                     String updatedPassword = JOptionPane.showInputDialog(this, "输入新密码:");
                     if (userIdToUpdate != null && updatedName != null && updatedPassword != null) {
-                        userDao.updateUserInfo1(Integer.parseInt(userIdToUpdate), updatedName, updatedPassword);
-                        JOptionPane.showMessageDialog(this, "用户信息更新成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        try {
+                            userDao.updateUserInfo1(Integer.parseInt(userIdToUpdate), updatedName, updatedPassword);
+                            JOptionPane.showMessageDialog(this, "用户信息更新成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        } catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(this, "用户名已存在，请选择其他用户名", "错误", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                     break;
                 case 2:
                     String userIdToDelete = JOptionPane.showInputDialog(this, "输入要删除的用户ID:");
                     if (userIdToDelete != null) {
-                        userDao.deleteUser(Integer.parseInt(userIdToDelete));
-                        JOptionPane.showMessageDialog(this, "用户删除成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        try {
+                            userDao.deleteUser(Integer.parseInt(userIdToDelete));
+                            JOptionPane.showMessageDialog(this, "用户删除成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        } catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(this, "操作失败，请重试", "错误", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                     break;
             }
@@ -110,8 +126,16 @@ public class AdminFrame extends JFrame {
                     String username = JOptionPane.showInputDialog(this, "输入医生用户名:");
                     String password = JOptionPane.showInputDialog(this, "输入医生密码:");
                     if (newName != null && specialty != null && availableTime != null && username != null && password != null) {
-                        doctorDao.addDoctor(newName, specialty, availableTime, username, password);
-                        JOptionPane.showMessageDialog(this, "医生添加成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        try {
+                            if (doctorDao.usernameExists(username)) {
+                                JOptionPane.showMessageDialog(this, "用户名已存在，请选择其他用户名", "错误", JOptionPane.ERROR_MESSAGE);
+                            } else {
+                                doctorDao.addDoctor(newName, specialty, availableTime, username, password);
+                                JOptionPane.showMessageDialog(this, "医生添加成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                        } catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(this, "操作失败，请重试", "错误", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                     break;
                 case 1:
@@ -122,15 +146,23 @@ public class AdminFrame extends JFrame {
                     String updatedUsername = JOptionPane.showInputDialog(this, "输入新用户名:");
                     String updatedPassword = JOptionPane.showInputDialog(this, "输入新密码:");
                     if (doctorIdToUpdate != null && updatedName != null && updatedSpecialty != null && updatedAvailableTime != null && updatedUsername != null && updatedPassword != null) {
-                        doctorDao.updateDoctorInfo(Integer.parseInt(doctorIdToUpdate), updatedName, updatedSpecialty, updatedAvailableTime, updatedUsername, updatedPassword);
-                        JOptionPane.showMessageDialog(this, "医生信息更新成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        try {
+                            doctorDao.updateDoctorInfo(Integer.parseInt(doctorIdToUpdate), updatedName, updatedSpecialty, updatedAvailableTime, updatedUsername, updatedPassword);
+                            JOptionPane.showMessageDialog(this, "医生信息更新成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        } catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(this, "用户名已存在，请选择其他用户名", "错误", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                     break;
                 case 2:
                     String doctorIdToDelete = JOptionPane.showInputDialog(this, "输入要删除的医生ID:");
                     if (doctorIdToDelete != null) {
-                        doctorDao.deleteDoctor(Integer.parseInt(doctorIdToDelete));
-                        JOptionPane.showMessageDialog(this, "医生删除成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        try {
+                            doctorDao.deleteDoctor(Integer.parseInt(doctorIdToDelete));
+                            JOptionPane.showMessageDialog(this, "医生删除成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        } catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(this, "操作失败，请重试", "错误", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                     break;
             }
@@ -162,15 +194,23 @@ public class AdminFrame extends JFrame {
                     String appointmentIdToUpdate = JOptionPane.showInputDialog(this, "输入要修改的预约ID:");
                     String updatedTime = JOptionPane.showInputDialog(this, "输入新预约时间 (格式: yyyy-MM-dd HH:mm):");
                     if (appointmentIdToUpdate != null && updatedTime != null) {
-                        appointmentDao.updateAppointmentTime(Integer.parseInt(appointmentIdToUpdate), updatedTime);
-                        JOptionPane.showMessageDialog(this, "预约信息更新成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        try {
+                            appointmentDao.updateAppointmentTime(Integer.parseInt(appointmentIdToUpdate), updatedTime);
+                            JOptionPane.showMessageDialog(this, "预约信息更新成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        } catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(this, "操作失败，请重试", "错误", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                     break;
                 case 1:
                     String appointmentIdToDelete = JOptionPane.showInputDialog(this, "输入要删除的预约ID:");
                     if (appointmentIdToDelete != null) {
-                        appointmentDao.deleteAppointment(Integer.parseInt(appointmentIdToDelete));
-                        JOptionPane.showMessageDialog(this, "预约删除成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        try {
+                            appointmentDao.deleteAppointment(Integer.parseInt(appointmentIdToDelete));
+                            JOptionPane.showMessageDialog(this, "预约删除成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                        } catch (SQLException ex) {
+                            JOptionPane.showMessageDialog(this, "操作失败，请重试", "错误", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                     break;
             }
@@ -196,12 +236,15 @@ public class AdminFrame extends JFrame {
 
             String reviewIdToDelete = JOptionPane.showInputDialog(this, "输入要删除的评价ID:");
             if (reviewIdToDelete != null) {
-                reviewDao.deleteReview(Integer.parseInt(reviewIdToDelete));
-                JOptionPane.showMessageDialog(this, "评价删除成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                try {
+                    reviewDao.deleteReview(Integer.parseInt(reviewIdToDelete));
+                    JOptionPane.showMessageDialog(this, "评价删除成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(this, "操作失败，请重试", "错误", JOptionPane.ERROR_MESSAGE);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
 }

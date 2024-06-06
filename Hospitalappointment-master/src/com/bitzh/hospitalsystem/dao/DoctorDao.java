@@ -12,7 +12,7 @@ public class DoctorDao {
     private Connection conn;
 
     public DoctorDao(Connection conn) throws SQLException {
-        this.conn = DatabaseConnectionManager.getConnection();
+        this.conn = conn;
     }
 
     public Doctor Login(String username, String password) throws SQLException {
@@ -103,5 +103,14 @@ public class DoctorDao {
             }
         }
         return appointments;
+    }
+
+    public boolean usernameExists(String username) throws SQLException {
+        String sql = "SELECT * FROM doctors WHERE username = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next();
+        }
     }
 }

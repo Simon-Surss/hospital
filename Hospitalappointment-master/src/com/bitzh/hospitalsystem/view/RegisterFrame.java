@@ -92,6 +92,12 @@ public class RegisterFrame extends JFrame {
 
         try (Connection conn = DatabaseConnectionManager.getConnection()) {
             UserDao userDao = new UserDao(conn);
+
+            if (userDao.usernameExists(username)) {
+                JOptionPane.showMessageDialog(this, "用户名已存在，请选择其他用户名！");
+                return;
+            }
+
             User user = new User();
             user.setUsername(username);
             user.setPassword(password1);
@@ -107,6 +113,7 @@ public class RegisterFrame extends JFrame {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "数据库错误，请稍后再试！");
         }
     }
 

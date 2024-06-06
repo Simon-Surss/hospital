@@ -3,12 +3,13 @@ package com.bitzh.hospitalsystem.dao;
 import com.bitzh.hospitalsystem.Utils.DatabaseConnectionManager;
 import com.bitzh.hospitalsystem.model.Appointment;
 import com.bitzh.hospitalsystem.model.User;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDao {
-    private Connection conn;
+    private final Connection conn;
 
     public UserDao(Connection conn) throws SQLException {
         this.conn = DatabaseConnectionManager.getConnection();
@@ -47,6 +48,9 @@ public class UserDao {
     }
 
     public boolean register(User user) throws SQLException {
+        if (usernameExists(user.getUsername())) {
+            return false; // 用户名已存在
+        }
         String sql = "INSERT INTO users (username, password, contact_info, user_type) VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, user.getUsername());
@@ -55,6 +59,19 @@ public class UserDao {
             pstmt.setString(4, user.getUserType() != null ? user.getUserType() : "user"); // 默认值为 'user'
             return pstmt.executeUpdate() > 0;
         }
+    }
+
+    public boolean usernameExists(String username) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM users WHERE username = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
     }
 
     public List<User> getAllUsers() throws SQLException {
@@ -85,6 +102,9 @@ public class UserDao {
     }
 
     public void updateUserInfo(int id, String username, String password, String contactInfo) throws SQLException {
+        if (usernameExistsExceptId(username, id)) {
+            throw new SQLException("用户名已存在");
+        }
         String sql = "UPDATE users SET username = ?, password = ?, contact_info = ? WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
@@ -96,6 +116,9 @@ public class UserDao {
     }
 
     public void updateUserInfo1(int id, String username, String password) throws SQLException {
+        if (usernameExistsExceptId(username, id)) {
+            throw new SQLException("用户名已存在");
+        }
         String sql = "UPDATE users SET username = ?, password = ? WHERE id = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
@@ -105,7 +128,19 @@ public class UserDao {
         }
     }
 
-
+    private boolean usernameExistsExceptId(String username, int id) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM users WHERE username = ? AND id != ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            pstmt.setInt(2, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
 
     public void deleteUser(int id) throws SQLException {
         String sql = "DELETE FROM users WHERE id = ?";

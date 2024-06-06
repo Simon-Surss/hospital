@@ -110,7 +110,6 @@ public class UserFrame extends JFrame {
         }
     }
 
-
     private void rateDoctor() {
         try {
             DoctorDao doctorDao = new DoctorDao(DatabaseConnectionManager.getConnection());
@@ -143,13 +142,20 @@ public class UserFrame extends JFrame {
     }
 
     private void updateInfo() {
-        String newName = JOptionPane.showInputDialog(this, "输入新姓名:");
+        String newName = JOptionPane.showInputDialog(this, "输入新用户名:");
         String newPassword = JOptionPane.showInputDialog(this, "输入新密码:");
         String newContactInfo = JOptionPane.showInputDialog(this, "输入新联系方式:");
 
         if (newName != null && newPassword != null && newContactInfo != null) {
             try {
                 UserDao userDao = new UserDao(DatabaseConnectionManager.getConnection());
+
+                // 检查新用户名是否已存在
+                if (userDao.usernameExists(newName)) {
+                    JOptionPane.showMessageDialog(this, "用户名已存在，请重新输入用户名", "错误", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 userDao.updateUserInfo(user.getId(), newName, newPassword, newContactInfo);
                 JOptionPane.showMessageDialog(this, "信息更新成功", "提示", JOptionPane.INFORMATION_MESSAGE);
             } catch (SQLException e) {
@@ -158,4 +164,16 @@ public class UserFrame extends JFrame {
         }
     }
 
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            User user = new User();
+            user.setId(1);
+            user.setUsername("testUser");
+            user.setPassword("password");
+            user.setContactInfo("123456789");
+            user.setUserType("user");
+
+            new UserFrame(user);
+        });
+    }
 }
