@@ -130,6 +130,6 @@ public class UserDao {
                 appointments.add(appointment);
             }
         }
-        return appointments
+        return appointments;
     }
 }
