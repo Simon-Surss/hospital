@@ -11,7 +11,7 @@ public class ReviewDao {
     private Connection connection;
 
     public ReviewDao(Connection connection) throws SQLException {
-        this.connection = DatabaseConnectionManager.getConnection();
+        this.connection = connection;
     }
 
     public List<Review> getAllReviews() throws SQLException {
@@ -24,8 +24,27 @@ public class ReviewDao {
                     resultSet.getInt("id"),
                     resultSet.getInt("user_id"),
                     resultSet.getInt("doctor_id"),
-                    resultSet.getInt("rating"), // 获取评分字段
-                    resultSet.getString("review_content") // 获取评价内容字段
+                    resultSet.getInt("rating"),
+                    resultSet.getString("review_content")
+            );
+            reviews.add(review);
+        }
+        return reviews;
+    }
+
+    public List<Review> getDoctorReviews(int doctorId) throws SQLException {
+        String sql = "SELECT * FROM reviews WHERE doctor_id = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, doctorId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        List<Review> reviews = new ArrayList<>();
+        while (resultSet.next()) {
+            Review review = new Review(
+                    resultSet.getInt("id"),
+                    resultSet.getInt("user_id"),
+                    resultSet.getInt("doctor_id"),
+                    resultSet.getInt("rating"),
+                    resultSet.getString("review_content")
             );
             reviews.add(review);
         }

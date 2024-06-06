@@ -214,20 +214,14 @@ public class LoginFrame extends JFrame {
         String password = new String(passwordField.getPassword());
 
         try (Connection conn = DatabaseConnectionManager.getConnection()) {
-            UserDao userDao = new UserDao(conn);
-            String userType = userDao.getUserType(username, password);
-            if ("admin".equals(userType)) {
-                AdminDao adminDao = new AdminDao(conn);
-                if (adminDao.login(username, password)) {
-                    JOptionPane.showMessageDialog(this, "管理员登录成功！");
-                    // 进入管理员界面
-                    // new AdminFrame().setVisible(true);
-                    // this.dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, "用户名或密码错误！");
-                }
+            AdminDao adminDao = new AdminDao(conn);
+            if (adminDao.login(username, password)) {
+                JOptionPane.showMessageDialog(this, "管理员登录成功！");
+                // 进入管理员界面
+                new AdminFrame().setVisible(true);
+                this.dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "用户登录类型不正确！");
+                JOptionPane.showMessageDialog(this, "用户名或密码错误！");
             }
         } catch (SQLException e) {
             e.printStackTrace();
