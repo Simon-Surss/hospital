@@ -84,7 +84,18 @@ public class UserDao {
         }
     }
 
-    public void updateUserInfo(int id, String username, String password) throws SQLException {
+    public void updateUserInfo(int id, String username, String password, String contactInfo) throws SQLException {
+        String sql = "UPDATE users SET username = ?, password = ?, contact_info = ? WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+            stmt.setString(3, contactInfo);
+            stmt.setInt(4, id);
+            stmt.executeUpdate();
+        }
+    }
+
+    public void updateUserInfo1(int id, String username, String password) throws SQLException {
         String sql = "UPDATE users SET username = ?, password = ? WHERE id = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
@@ -93,6 +104,8 @@ public class UserDao {
             pstmt.executeUpdate();
         }
     }
+
+
 
     public void deleteUser(int id) throws SQLException {
         String sql = "DELETE FROM users WHERE id = ?";

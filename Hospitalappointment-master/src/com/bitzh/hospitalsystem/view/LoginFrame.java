@@ -170,22 +170,18 @@ public class LoginFrame extends JFrame {
         try (Connection conn = DatabaseConnectionManager.getConnection()) {
             UserDao userDao = new UserDao(conn);
             User user = userDao.login(username, password);
-            if (user != null) {
-                if ("user".equals(user.getUserType())) {
-                    JOptionPane.showMessageDialog(this, "用户登录成功！");
-                    // 进入用户界面
-                    // new UserFrame(user).setVisible(true);
-                    // this.dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, "用户登录类型不正确！");
-                }
+            if (user != null && "user".equals(user.getUserType())) {
+                JOptionPane.showMessageDialog(this, "用户登录成功！");
+                new UserFrame(user).setVisible(true);
+                this.dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "用户名或密码错误！");
+                JOptionPane.showMessageDialog(this, "用户名或密码错误，或用户类型不正确！");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 
     private void doctorLogin() {
         String username = usernameField.getText();

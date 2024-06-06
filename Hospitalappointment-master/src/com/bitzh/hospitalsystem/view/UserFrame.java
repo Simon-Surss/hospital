@@ -145,15 +145,17 @@ public class UserFrame extends JFrame {
     private void updateInfo() {
         String newName = JOptionPane.showInputDialog(this, "输入新姓名:");
         String newPassword = JOptionPane.showInputDialog(this, "输入新密码:");
+        String newContactInfo = JOptionPane.showInputDialog(this, "输入新联系方式:");
 
-        if (newName != null && newPassword != null) {
+        if (newName != null && newPassword != null && newContactInfo != null) {
             try {
                 UserDao userDao = new UserDao(DatabaseConnectionManager.getConnection());
-                userDao.updateUserInfo(user.getId(), newName, newPassword);
+                userDao.updateUserInfo(user.getId(), newName, newPassword, newContactInfo);
                 JOptionPane.showMessageDialog(this, "信息更新成功", "提示", JOptionPane.INFORMATION_MESSAGE);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
     }
+
 }

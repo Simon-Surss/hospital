@@ -69,7 +69,7 @@ public class AdminFrame extends JFrame {
                     String updatedName = JOptionPane.showInputDialog(this, "输入新姓名:");
                     String updatedPassword = JOptionPane.showInputDialog(this, "输入新密码:");
                     if (userIdToUpdate != null && updatedName != null && updatedPassword != null) {
-                        userDao.updateUserInfo(Integer.parseInt(userIdToUpdate), updatedName, updatedPassword);
+                        userDao.updateUserInfo1(Integer.parseInt(userIdToUpdate), updatedName, updatedPassword);
                         JOptionPane.showMessageDialog(this, "用户信息更新成功", "提示", JOptionPane.INFORMATION_MESSAGE);
                     }
                     break;
