@@ -178,7 +178,7 @@ public class LoginFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "用户名或密码错误，或用户类型不正确！");
             }
         } catch (SQLException e) {
-            e.printStackTrace()
+            e.printStackTrace();
         }
     }
 
