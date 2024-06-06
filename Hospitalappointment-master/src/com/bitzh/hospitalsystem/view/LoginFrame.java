@@ -158,7 +158,7 @@ public class LoginFrame extends JFrame {
                     JOptionPane.showMessageDialog(registerFrame, "用户注册失败！");
                 }
             } catch (SQLException e1) {
-                e1.printStackTrace();
+                e1.printStackTrace()
             }
         });
     }
