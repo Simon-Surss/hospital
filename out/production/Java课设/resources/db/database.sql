@@ -22,6 +22,8 @@ CREATE TABLE doctors (
                          username VARCHAR(255) NOT NULL,
                          password VARCHAR(255) NOT NULL
 );
+alter table  doctors add  column user_type VARCHAR(50) NOT NULL;
+UPDATE doctors SET user_type = 'doctor' WHERE id = 1;
 
 -- 创建 appointments 表
 CREATE TABLE appointments (
