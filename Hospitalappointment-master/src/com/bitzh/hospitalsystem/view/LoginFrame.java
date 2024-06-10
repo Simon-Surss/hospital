@@ -182,27 +182,19 @@ public class LoginFrame extends JFrame {
         }
     }
 
-
     private void doctorLogin() {
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
 
         try (Connection conn = DatabaseConnectionManager.getConnection()) {
-            UserDao userDao = new UserDao(conn);
-            String userType = userDao.getUserType(username, password);
-            if ("doctor".equals(userType)) {
-                DoctorDao doctorDao = new DoctorDao(conn);
-                Doctor doctor = doctorDao.Login(username, password);
-                if (doctor != null) {
-                    JOptionPane.showMessageDialog(this, "医生登录成功！");
-                    // 进入医生界面
-                    // new DoctorFrame(doctor).setVisible(true);
-                    // this.dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, "用户名或密码错误！");
-                }
+            DoctorDao doctorDao = new DoctorDao(conn);
+            Doctor doctor = doctorDao.Login(username, password);
+            if (doctor != null) {
+                JOptionPane.showMessageDialog(this, "医生登录成功！");
+                new DoctorFrame(doctor).setVisible(true);
+                this.dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "用户登录类型不正确！");
+                JOptionPane.showMessageDialog(this, "用户名或密码错误，或用户类型不正确！");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -217,7 +209,6 @@ public class LoginFrame extends JFrame {
             AdminDao adminDao = new AdminDao(conn);
             if (adminDao.login(username, password)) {
                 JOptionPane.showMessageDialog(this, "管理员登录成功！");
-                // 进入管理员界面
                 new AdminFrame().setVisible(true);
                 this.dispose();
             } else {

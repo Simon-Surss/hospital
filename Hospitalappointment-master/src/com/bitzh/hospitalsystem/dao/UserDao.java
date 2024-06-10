@@ -61,6 +61,19 @@ public class UserDao {
         }
     }
 
+    public boolean registerDoctor(User user) throws SQLException {
+        if (usernameExists(user.getUsername())) {
+            return false; // 用户名已存在
+        }
+        String sql = "INSERT INTO users (username, password, contact_info, user_type) VALUES (?, ?, ?, 'doctor')";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, user.getUsername());
+            pstmt.setString(2, user.getPassword());
+            pstmt.setString(3, user.getContactInfo());
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
     public boolean usernameExists(String username) throws SQLException {
         String sql = "SELECT COUNT(*) FROM users WHERE username = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
