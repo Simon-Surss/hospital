@@ -192,7 +192,7 @@ public class LoginFrame extends JFrame {
             if (doctor != null) {
                 JOptionPane.showMessageDialog(this, "医生登录成功！");
                 new DoctorFrame(doctor).setVisible(true);
-                this.dispose()
+                this.dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "用户名或密码错误，或用户类型不正确！");
             }
