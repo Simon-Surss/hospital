@@ -33,7 +33,7 @@ public class ViewAppointmentsFrame extends JFrame {
             DoctorDao doctorDao = new DoctorDao(DatabaseConnectionManager.getConnection());
             List<Appointment> appointments = userDao.viewAppointments(user.getId());
             for (Appointment appointment : appointments) {
-                Object[] row = new Object[3]
+                Object[] row = new Object[3]；
                 row[0] = appointment.getId();
                 row[1] = doctorDao.getDoctorNameById(appointment.getDoctorId());
                 row[2] = appointment.getAppointmentTime();
