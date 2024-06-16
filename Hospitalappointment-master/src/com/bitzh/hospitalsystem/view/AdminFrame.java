@@ -1,13 +1,7 @@
 package com.bitzh.hospitalsystem.view;
 
-import com.bitzh.hospitalsystem.Utils.DatabaseConnectionManager;
-import com.bitzh.hospitalsystem.dao.*;
-import com.bitzh.hospitalsystem.model.*;
-
 import javax.swing.*;
 import java.awt.*;
-import java.sql.SQLException;
-import java.util.List;
 
 public class AdminFrame extends JFrame {
     public AdminFrame() {
@@ -23,228 +17,26 @@ public class AdminFrame extends JFrame {
         JButton manageDoctorsButton = new JButton("医生管理");
         JButton manageAppointmentsButton = new JButton("预约管理");
         JButton manageReviewsButton = new JButton("评价管理");
+        JButton logoutButton = new JButton("退出");
 
         panel.add(manageUsersButton);
         panel.add(manageDoctorsButton);
         panel.add(manageAppointmentsButton);
         panel.add(manageReviewsButton);
+        panel.add(logoutButton);
 
         add(panel);
 
-        manageUsersButton.addActionListener(e -> manageUsers());
-        manageDoctorsButton.addActionListener(e -> manageDoctors());
-        manageAppointmentsButton.addActionListener(e -> manageAppointments());
-        manageReviewsButton.addActionListener(e -> manageReviews());
+        manageUsersButton.addActionListener(e -> new ManageUsersFrame());
+        manageDoctorsButton.addActionListener(e -> new ManageDoctorsFrame());
+        manageAppointmentsButton.addActionListener(e -> new ManageAppointmentsFrame());
+        manageReviewsButton.addActionListener(e -> new ManageReviewsFrame());
+
+        logoutButton.addActionListener(e -> {
+            new LoginFrame().setVisible(true); // 重新显示登录界面
+            dispose(); // 关闭当前窗口
+        });
 
         setVisible(true);
-    }
-
-    private void manageUsers() {
-        try {
-            UserDao userDao = new UserDao(DatabaseConnectionManager.getConnection());
-            List<User> users = userDao.getAllUsers();
-            StringBuilder info = new StringBuilder();
-            for (User user : users) {
-                info.append("ID: ").append(user.getId())
-                        .append(", 姓名: ").append(user.getUsername())
-                        .append("\n");
-            }
-            JOptionPane.showMessageDialog(this, info.toString(), "用户信息", JOptionPane.INFORMATION_MESSAGE);
-
-            String[] options = {"添加", "修改", "删除"};
-            int choice = JOptionPane.showOptionDialog(this, "选择操作", "用户管理",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
-
-            switch (choice) {
-                case 0:
-                    String newName = JOptionPane.showInputDialog(this, "输入新用户姓名:");
-                    String newPassword = JOptionPane.showInputDialog(this, "输入新用户密码:");
-                    if (newName != null && newPassword != null) {
-                        try {
-                            if (userDao.usernameExists(newName)) {
-                                JOptionPane.showMessageDialog(this, "用户名已存在，请选择其他用户名", "错误", JOptionPane.ERROR_MESSAGE);
-                            } else {
-                                userDao.addUser(newName, newPassword);
-                                JOptionPane.showMessageDialog(this, "用户添加成功", "提示", JOptionPane.INFORMATION_MESSAGE);
-                            }
-                        } catch (SQLException ex) {
-                            JOptionPane.showMessageDialog(this, "操作失败，请重试", "错误", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                    break;
-                case 1:
-                    String userIdToUpdate = JOptionPane.showInputDialog(this, "输入要修改的用户ID:");
-                    String updatedName = JOptionPane.showInputDialog(this, "输入新姓名:");
-                    String updatedPassword = JOptionPane.showInputDialog(this, "输入新密码:");
-                    if (userIdToUpdate != null && updatedName != null && updatedPassword != null) {
-                        try {
-                            userDao.updateUserInfo1(Integer.parseInt(userIdToUpdate), updatedName, updatedPassword);
-                            JOptionPane.showMessageDialog(this, "用户信息更新成功", "提示", JOptionPane.INFORMATION_MESSAGE);
-                        } catch (SQLException ex) {
-                            JOptionPane.showMessageDialog(this, "用户名已存在，请选择其他用户名", "错误", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                    break;
-                case 2:
-                    String userIdToDelete = JOptionPane.showInputDialog(this, "输入要删除的用户ID:");
-                    if (userIdToDelete != null) {
-                        try {
-                            userDao.deleteUser(Integer.parseInt(userIdToDelete));
-                            JOptionPane.showMessageDialog(this, "用户删除成功", "提示", JOptionPane.INFORMATION_MESSAGE);
-                        } catch (SQLException ex) {
-                            JOptionPane.showMessageDialog(this, "操作失败，请重试", "错误", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                    break;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void manageDoctors() {
-        try {
-            DoctorDao doctorDao = new DoctorDao(DatabaseConnectionManager.getConnection());
-            List<Doctor> doctors = doctorDao.getAllDoctors();
-            StringBuilder info = new StringBuilder();
-            for (Doctor doctor : doctors) {
-                info.append("ID: ").append(doctor.getId())
-                        .append(", 姓名: ").append(doctor.getName())
-                        .append("\n");
-            }
-            JOptionPane.showMessageDialog(this, info.toString(), "医生信息", JOptionPane.INFORMATION_MESSAGE);
-
-            String[] options = {"添加", "修改", "删除"};
-            int choice = JOptionPane.showOptionDialog(this, "选择操作", "医生管理",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
-
-            switch (choice) {
-                case 0:
-                    String newName = JOptionPane.showInputDialog(this, "输入新医生姓名:");
-                    String specialty = JOptionPane.showInputDialog(this, "输入医生专长:");
-                    String availableTime = JOptionPane.showInputDialog(this, "输入医生可用时间:");
-                    String username = JOptionPane.showInputDialog(this, "输入医生用户名:");
-                    String password = JOptionPane.showInputDialog(this, "输入医生密码:");
-                    if (newName != null && specialty != null && availableTime != null && username != null && password != null) {
-                        try {
-                            if (doctorDao.usernameExists(username)) {
-                                JOptionPane.showMessageDialog(this, "用户名已存在，请选择其他用户名", "错误", JOptionPane.ERROR_MESSAGE);
-                            } else {
-                                doctorDao.addDoctor(newName, specialty, availableTime, username, password);
-                                JOptionPane.showMessageDialog(this, "医生添加成功", "提示", JOptionPane.INFORMATION_MESSAGE);
-                            }
-                        } catch (SQLException ex) {
-                            JOptionPane.showMessageDialog(this, "操作失败，请重试", "错误", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                    break;
-                case 1:
-                    String doctorIdToUpdate = JOptionPane.showInputDialog(this, "输入要修改的医生ID:");
-                    String updatedName = JOptionPane.showInputDialog(this, "输入新姓名:");
-                    String updatedSpecialty = JOptionPane.showInputDialog(this, "输入新专长:");
-                    String updatedAvailableTime = JOptionPane.showInputDialog(this, "输入新可用时间:");
-                    String updatedUsername = JOptionPane.showInputDialog(this, "输入新用户名:");
-                    String updatedPassword = JOptionPane.showInputDialog(this, "输入新密码:");
-                    if (doctorIdToUpdate != null && updatedName != null && updatedSpecialty != null && updatedAvailableTime != null && updatedUsername != null && updatedPassword != null) {
-                        try {
-                            doctorDao.updateDoctorInfo(Integer.parseInt(doctorIdToUpdate), updatedName, updatedSpecialty, updatedAvailableTime, updatedUsername, updatedPassword);
-                            JOptionPane.showMessageDialog(this, "医生信息更新成功", "提示", JOptionPane.INFORMATION_MESSAGE);
-                        } catch (SQLException ex) {
-                            JOptionPane.showMessageDialog(this, "用户名已存在，请选择其他用户名", "错误", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                    break;
-                case 2:
-                    String doctorIdToDelete = JOptionPane.showInputDialog(this, "输入要删除的医生ID:");
-                    if (doctorIdToDelete != null) {
-                        try {
-                            doctorDao.deleteDoctor(Integer.parseInt(doctorIdToDelete));
-                            JOptionPane.showMessageDialog(this, "医生删除成功", "提示", JOptionPane.INFORMATION_MESSAGE);
-                        } catch (SQLException ex) {
-                            JOptionPane.showMessageDialog(this, "操作失败，请重试", "错误", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                    break;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void manageAppointments() {
-        try {
-            AppointmentDao appointmentDao = new AppointmentDao(DatabaseConnectionManager.getConnection());
-            List<Appointment> appointments = appointmentDao.getAllAppointments();
-            StringBuilder info = new StringBuilder();
-            for (Appointment appointment : appointments) {
-                info.append("预约ID: ").append(appointment.getId())
-                        .append(", 用户ID: ").append(appointment.getUserId())
-                        .append(", 医生ID: ").append(appointment.getDoctorId())
-                        .append(", 预约时间: ").append(appointment.getAppointmentTime())
-                        .append("\n");
-            }
-            JOptionPane.showMessageDialog(this, info.toString(), "预约信息", JOptionPane.INFORMATION_MESSAGE);
-
-            String[] options = {"修改", "删除"};
-            int choice = JOptionPane.showOptionDialog(this, "选择操作", "预约管理",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
-
-            switch (choice) {
-                case 0:
-                    String appointmentIdToUpdate = JOptionPane.showInputDialog(this, "输入要修改的预约ID:");
-                    String updatedTime = JOptionPane.showInputDialog(this, "输入新预约时间 (格式: yyyy-MM-dd HH:mm):");
-                    if (appointmentIdToUpdate != null && updatedTime != null) {
-                        try {
-                            appointmentDao.updateAppointmentTime(Integer.parseInt(appointmentIdToUpdate), updatedTime);
-                            JOptionPane.showMessageDialog(this, "预约信息更新成功", "提示", JOptionPane.INFORMATION_MESSAGE);
-                        } catch (SQLException ex) {
-                            JOptionPane.showMessageDialog(this, "操作失败，请重试", "错误", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                    break;
-                case 1:
-                    String appointmentIdToDelete = JOptionPane.showInputDialog(this, "输入要删除的预约ID:");
-                    if (appointmentIdToDelete != null) {
-                        try {
-                            appointmentDao.deleteAppointment(Integer.parseInt(appointmentIdToDelete));
-                            JOptionPane.showMessageDialog(this, "预约删除成功", "提示", JOptionPane.INFORMATION_MESSAGE);
-                        } catch (SQLException ex) {
-                            JOptionPane.showMessageDialog(this, "操作失败，请重试", "错误", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                    break;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void manageReviews() {
-        try {
-            ReviewDao reviewDao = new ReviewDao(DatabaseConnectionManager.getConnection());
-            List<Review> reviews = reviewDao.getAllReviews();
-            StringBuilder info = new StringBuilder();
-            for (Review review : reviews) {
-                info.append("评价ID: ").append(review.getId())
-                        .append(", 用户ID: ").append(review.getUserId())
-                        .append(", 医生ID: ").append(review.getDoctorId())
-                        .append(", 评分: ").append(review.getRating())
-                        .append(", 评价内容: ").append(review.getReviewContent())
-                        .append("\n");
-            }
-            JOptionPane.showMessageDialog(this, info.toString(), "评价信息", JOptionPane.INFORMATION_MESSAGE);
-
-            String reviewIdToDelete = JOptionPane.showInputDialog(this, "输入要删除的评价ID:");
-            if (reviewIdToDelete != null) {
-                try {
-                    reviewDao.deleteReview(Integer.parseInt(reviewIdToDelete));
-                    JOptionPane.showMessageDialog(this, "评价删除成功", "提示", JOptionPane.INFORMATION_MESSAGE);
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "操作失败，请重试", "错误", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 }

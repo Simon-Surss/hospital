@@ -16,7 +16,7 @@ public class UserFrame extends JFrame {
         this.user = user;
 
         setTitle("用户界面");
-        setSize(400, 300);
+        setSize(500, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -28,12 +28,14 @@ public class UserFrame extends JFrame {
         JButton viewAppointmentsButton = new JButton("查看预约");
         JButton rateDoctorButton = new JButton("评价医生");
         JButton updateInfoButton = new JButton("修改个人信息");
+        JButton logoutButton = new JButton("退出登录");
 
         panel.add(viewDoctorsButton);
         panel.add(bookAppointmentButton);
         panel.add(viewAppointmentsButton);
         panel.add(rateDoctorButton);
         panel.add(updateInfoButton);
+        panel.add(logoutButton);
 
         add(panel);
 
@@ -42,74 +44,35 @@ public class UserFrame extends JFrame {
         viewAppointmentsButton.addActionListener(e -> viewAppointments());
         rateDoctorButton.addActionListener(e -> rateDoctor());
         updateInfoButton.addActionListener(e -> updateInfo());
+        logoutButton.addActionListener(e -> logout());
 
         setVisible(true);
     }
-
+    //用户查看医生信息
     private void viewDoctors() {
         try {
             DoctorDao doctorDao = new DoctorDao(DatabaseConnectionManager.getConnection());
             List<Doctor> doctors = doctorDao.getAllDoctors();
-            StringBuilder info = new StringBuilder();
-            for (Doctor doctor : doctors) {
-                info.append("ID: ").append(doctor.getId())
-                        .append(", 姓名: ").append(doctor.getName())
-                        .append(", 专长: ").append(doctor.getSpecialty())
-                        .append(", 可用时间: ").append(doctor.getAvailable_time())
-                        .append("\n");
-            }
-            JOptionPane.showMessageDialog(this, info.toString(), "医生信息", JOptionPane.INFORMATION_MESSAGE);
+            new DoctorInfoFrame(doctors);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    //用户预约医生的方法
     private void bookAppointment() {
         try {
             DoctorDao doctorDao = new DoctorDao(DatabaseConnectionManager.getConnection());
             List<Doctor> doctors = doctorDao.getAllDoctors();
-            String[] doctorNames = new String[doctors.size()];
-            for (int i = 0; i < doctors.size(); i++) {
-                doctorNames[i] = doctors.get(i).getName();
-            }
-
-            String selectedDoctorName = (String) JOptionPane.showInputDialog(this, "选择医生", "预约医生",
-                    JOptionPane.QUESTION_MESSAGE, null, doctorNames, doctorNames[0]);
-
-            if (selectedDoctorName != null) {
-                for (Doctor doctor : doctors) {
-                    if (doctor.getName().equals(selectedDoctorName)) {
-                        String appointmentTime = JOptionPane.showInputDialog(this, "输入预约时间 (格式: yyyy-MM-dd HH:mm):");
-                        if (appointmentTime != null) {
-                            AppointmentDao appointmentDao = new AppointmentDao(DatabaseConnectionManager.getConnection());
-                            appointmentDao.bookAppointment(user.getId(), doctor.getId(), appointmentTime);
-                            JOptionPane.showMessageDialog(this, "预约成功", "提示", JOptionPane.INFORMATION_MESSAGE);
-                        }
-                    }
-                }
-            }
+            new BookAppointmentFrame(user, doctors);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     private void viewAppointments() {
-        try {
-            UserDao userDao = new UserDao(DatabaseConnectionManager.getConnection());
-            List<Appointment> appointments = userDao.viewAppointments(user.getId());
-            StringBuilder info = new StringBuilder();
-            for (Appointment appointment : appointments) {
-                info.append("预约ID: ").append(appointment.getId())
-                        .append(", 医生ID: ").append(appointment.getDoctorId())
-                        .append(", 预约时间: ").append(appointment.getAppointmentTime())
-                        .append("\n");
-            }
-            JOptionPane.showMessageDialog(this, info.toString(), "预约信息", JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        new ViewAppointmentsFrame(user);
     }
-
     private void rateDoctor() {
         try {
             DoctorDao doctorDao = new DoctorDao(DatabaseConnectionManager.getConnection());
@@ -140,7 +103,6 @@ public class UserFrame extends JFrame {
             e.printStackTrace();
         }
     }
-
     private void updateInfo() {
         String newName = JOptionPane.showInputDialog(this, "输入新用户名:");
         String newPassword = JOptionPane.showInputDialog(this, "输入新密码:");
@@ -163,7 +125,10 @@ public class UserFrame extends JFrame {
             }
         }
     }
-
+    private void logout() {
+        new LoginFrame().setVisible(true);
+        this.dispose();
+    }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             User user = new User();
@@ -175,5 +140,7 @@ public class UserFrame extends JFrame {
 
             new UserFrame(user);
         });
+
+
     }
 }

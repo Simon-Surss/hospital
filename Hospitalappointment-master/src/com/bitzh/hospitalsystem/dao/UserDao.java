@@ -2,6 +2,7 @@ package com.bitzh.hospitalsystem.dao;
 
 import com.bitzh.hospitalsystem.Utils.DatabaseConnectionManager;
 import com.bitzh.hospitalsystem.model.Appointment;
+import com.bitzh.hospitalsystem.model.Doctor;
 import com.bitzh.hospitalsystem.model.User;
 
 import java.sql.*;
@@ -179,5 +180,21 @@ public class UserDao {
             }
         }
         return appointments;
+    }
+
+    //获取已预约的医生
+    public List<Doctor> getAppointedDoctors(int userId) throws SQLException {
+        String sql = "SELECT doctors.id, doctors.name FROM doctors JOIN appointments ON doctors.id = appointments.doctor_id WHERE appointments.user_id = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setInt(1, userId);
+        ResultSet rs = stmt.executeQuery();
+        List<Doctor> doctors = new ArrayList<>();
+        while (rs.next()) {
+            Doctor doctor = new Doctor();
+            doctor.setId(rs.getInt("id"));
+            doctor.setName(rs.getString("name"));
+            doctors.add(doctor);
+        }
+        return doctors;
     }
 }

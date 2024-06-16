@@ -34,7 +34,17 @@ public class DoctorDao {
         }
         return null;
     }
-
+    public String getDoctorNameById(int id) throws SQLException {
+        String sql = "SELECT name FROM doctors WHERE id = ?";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setInt(1, id);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            return rs.getString("name");
+        } else {
+            return null;
+        }
+    }
     public List<Doctor> getAllDoctors() throws SQLException {
         List<Doctor> doctors = new ArrayList<>();
         String sql = "SELECT * FROM doctors";
