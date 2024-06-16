@@ -26,7 +26,7 @@ public class ViewAppointmentsFrame extends JFrame {
 
         String[] columnNames = {"预约ID", "医生姓名", "预约时间"};
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
-        JTable table = new JTable(model);
+        JTable table = new JTable(model)
 
         try {
             UserDao userDao = new UserDao(DatabaseConnectionManager.getConnection());
