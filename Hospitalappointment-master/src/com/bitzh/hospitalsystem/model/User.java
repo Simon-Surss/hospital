@@ -5,7 +5,7 @@ public class User {
     private String username;
     private String password;
     private String contactInfo;
-    private String userType; // 添加用户类型字段
+    private String userType // 添加用户类型字段
 
     // Getters and Setters for all fields
     public int getId() {
