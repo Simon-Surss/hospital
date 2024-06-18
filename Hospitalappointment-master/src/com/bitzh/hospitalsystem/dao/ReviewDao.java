@@ -32,24 +32,6 @@ public class ReviewDao {
         return reviews;
     }
 
-    public List<Review> getDoctorReviews(int doctorId) throws SQLException {
-        String sql = "SELECT * FROM reviews WHERE doctor_id = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setInt(1, doctorId);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        List<Review> reviews = new ArrayList<>();
-        while (resultSet.next()) {
-            Review review = new Review(
-                    resultSet.getInt("id"),
-                    resultSet.getInt("user_id"),
-                    resultSet.getInt("doctor_id"),
-                    resultSet.getInt("rating"),
-                    resultSet.getString("review_content")
-            );
-            reviews.add(review);
-        }
-        return reviews;
-    }
 
     public void addReview(int userId, int doctorId, int rating, String reviewContent) throws SQLException {
         String sql = "INSERT INTO reviews (user_id, doctor_id, rating, review_content) VALUES (?, ?, ?, ?)";

@@ -65,7 +65,7 @@ public class DoctorDao {
     }
 
     public void addDoctor(String name, String specialty, String availableTime, String username, String password) throws SQLException {
-        String sql = "INSERT INTO doctors (name, specialty, available_time, username, password) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO doctors (name, specialty, available_time, username, password,user_type ) VALUES (?, ?, ?, ?, ?, 'doctor')";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, name);
             pstmt.setString(2, specialty);
@@ -123,4 +123,40 @@ public class DoctorDao {
             return rs.next();
         }
     }
+
+    // 新增方法：保存聊天信息
+    public void saveMessage(String sender, String receiver, String message) throws SQLException {
+        String sql = "INSERT INTO chat_messages (sender, receiver, message, timestamp) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, sender);
+            pstmt.setString(2, receiver);
+            pstmt.setString(3, message);
+            pstmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+            pstmt.executeUpdate();
+        }
+    }
+
+    // 新增方法：获取聊天历史记录
+    public List<String> getChatHistory(String user1, String user2) throws SQLException {
+        List<String> messages = new ArrayList<>();
+        String sql = "SELECT sender, message, timestamp FROM chat_messages " +
+                "WHERE (sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?) " +
+                "ORDER BY timestamp";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, user1);
+            pstmt.setString(2, user2);
+            pstmt.setString(3, user2);
+            pstmt.setString(4, user1);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    String sender = rs.getString("sender");
+                    String message = rs.getString("message");
+                    Timestamp timestamp = rs.getTimestamp("timestamp");
+                    messages.add("[" + timestamp + "] " + sender + ": " + message);
+                }
+            }
+        }
+        return messages;
+    }
+
 }

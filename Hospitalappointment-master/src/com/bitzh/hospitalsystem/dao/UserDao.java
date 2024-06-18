@@ -197,4 +197,39 @@ public class UserDao {
         }
         return doctors;
     }
+
+    public void saveMessage(String sender, String receiver, String message) throws SQLException {
+        String sql = "INSERT INTO chat_messages (sender, receiver, message, timestamp) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, sender);
+            pstmt.setString(2, receiver);
+            pstmt.setString(3, message);
+            pstmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+            pstmt.executeUpdate();
+        }
+    }
+
+    public List<String> getChatHistory(String user1, String user2) throws SQLException {
+        List<String> messages = new ArrayList<>();
+        String sql = "SELECT sender, message, timestamp FROM chat_messages " +
+                "WHERE (sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?) " +
+                "ORDER BY timestamp";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, user1);
+            pstmt.setString(2, user2);
+            pstmt.setString(3, user2);
+            pstmt.setString(4, user1);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    String sender = rs.getString("sender");
+                    String message = rs.getString("message");
+                    Timestamp timestamp = rs.getTimestamp("timestamp");
+                    messages.add("[" + timestamp + "] " + sender + ": " + message);
+                }
+            }
+        }
+        return messages;
+    }
 }
+
+

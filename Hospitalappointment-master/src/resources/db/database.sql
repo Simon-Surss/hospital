@@ -50,7 +50,16 @@ CREATE TABLE reviews (
 CREATE TABLE admins (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         username VARCHAR(255) NOT NULL,
-                        password VARCHAR(255) NOT NULL,
+                        password VARCHAR(255) NOT NULL
 );
 alter table  admins add  column user_type VARCHAR(50) NOT NULL;
 UPDATE admins SET user_type = 'admin' WHERE id = 1;
+
+CREATE TABLE chat_messages (
+                               id INT AUTO_INCREMENT PRIMARY KEY,
+                               sender VARCHAR(255) NOT NULL,
+                               receiver VARCHAR(255) NOT NULL,
+                               message TEXT NOT NULL,
+                               timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+

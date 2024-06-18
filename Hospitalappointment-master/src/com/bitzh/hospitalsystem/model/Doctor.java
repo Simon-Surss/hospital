@@ -79,4 +79,6 @@ public class Doctor {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public String getUserID(){return String.valueOf(id);}
 }

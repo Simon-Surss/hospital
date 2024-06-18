@@ -47,4 +47,6 @@ public class User {
     public void setUserType(String userType) {
         this.userType = userType;
     }
+
+    public String getUserID(){return String.valueOf(id);}
 }
